@@ -75,10 +75,10 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   }, []);
 
   return (
-    <>
+    <div className="grid cs1 ce12">
       {messages.map((message: ChatMessage) => (
         <ChatMessageItem information={message} />
       ))}
-    </>
+    </div>
   );
 };
