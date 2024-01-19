@@ -9,7 +9,7 @@ import { Router } from './router';
 const App: React.FC = () => {
   return (
     <div
-      className='grid h100 debug'
+      className='grid h100'
       style={{
         overflow: 'hidden',
         display: 'flex',
@@ -18,7 +18,7 @@ const App: React.FC = () => {
         justifyContent: 'space-between',
         alignItems: 'flex-start',
       }}>
-      <div className='grid debug w100' style={{ overflow: 'scroll' }}>
+      <div className='grid w100' style={{ overflow: 'scroll' }}>
         <Router />
       </div>
 
