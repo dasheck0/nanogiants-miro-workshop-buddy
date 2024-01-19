@@ -30,6 +30,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/dashec
 ## License
 <!-- section: License -->
 <!-- Describe the license under which your software is published. Note that an unlicensed piece of software is most likely never used. So do not skip tihs part! -->
+```
 MIT License Copyright (c) 2024 Stefan Neidig
 
 Permission is hereby granted, free
@@ -51,3 +52,4 @@ EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
 OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+```
