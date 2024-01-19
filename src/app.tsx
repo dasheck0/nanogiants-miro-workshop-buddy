@@ -1,47 +1,22 @@
 import * as React from 'react';
-import {createRoot} from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 import '../src/assets/style.css';
-
-async function addSticky() {
-  const stickyNote = await miro.board.createStickyNote({
-    content: 'Hello, World!',
-  });
-
-  await miro.board.viewport.zoomTo(stickyNote);
-}
+import { Footer } from './components/Footer';
 
 const App: React.FC = () => {
-  React.useEffect(() => {
-    addSticky();
-  }, []);
-
   return (
-    <div className="grid wrapper">
-      <div className="cs1 ce12">
-        <img src="/src/assets/congratulations.png" alt="" />
+    <div className='grid h100 w100' style={{ gridTemplateRows: '1fr auto' }}>
+      <div className='grid cs1 ce12' style={{ alignSelf: 'flex-start' }}>
+        <div className='cs1 ce4 placeholder'>test</div>
+        <div className='cs6 ce11 placeholder'>test</div>
       </div>
-      <div className="cs1 ce12">
-        <h1>Congratulations!</h1>
-        <p>You've just created your first Miro app!</p>
-        <p>
-          To explore more and build your own app, see the Miro Developer
-          Platform documentation.
-        </p>
-      </div>
-      <div className="cs1 ce12">
-        <a
-          className="button button-primary"
-          target="_blank"
-          href="https://developers.miro.com"
-        >
-          Read the documentation
-        </a>
-      </div>
+
+      <Footer />
     </div>
   );
 };
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+const root = createRoot(container!);
 root.render(<App />);
