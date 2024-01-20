@@ -2,10 +2,11 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { BrowserRouter } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import '../src/assets/style.css';
 import { Footer } from './components/Footer';
 import { Router } from './router';
+import { theme } from './theme';
 
 const App: React.FC = () => {
   return (
@@ -19,11 +20,13 @@ const App: React.FC = () => {
   );
 };
 
-const container = document.getElementById('root');
-const root = createRoot(container!);
+const container = document.getElementById('root') as HTMLElement;
+const root = createRoot(container);
 root.render(
   <BrowserRouter>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </BrowserRouter>,
 );
 
@@ -34,9 +37,11 @@ const MainContainer = styled.div`
   overflow: hidden;
   justify-content: space-between;
   align-items: flex-start;
+  background-color: ${props => props.theme.colors.background};
 `;
 
 const ContentContainer = styled.div`
   overflow: scroll;
   width: 100%;
+  height: 100%;
 `;

@@ -11,7 +11,7 @@ export const Settings = () => {
   };
 
   return (
-    <>
+    <Container className='cs1 ce12 grid'>
       <h1 className='cs1 ce12 h1'>Settings</h1>
       <div className='form-group-small cs1 ce12'>
         <label htmlFor='openai-api-key'>OpenAI API Key</label>
@@ -29,9 +29,13 @@ export const Settings = () => {
       <Button className='cs1 ce12 button button-primary button-small' onClick={() => updateItems()}>
         Save
       </Button>
-    </>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  align-self: flex-start;
+`;
 
 const Button = styled.button`
   text-align: center;
