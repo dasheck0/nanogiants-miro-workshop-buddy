@@ -10,13 +10,14 @@ export interface ChatbotProps {}
 export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
   const [currentQuery, setCurrentQuery] = React.useState<string>('');
+  const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(false);
   const { query } = useChat();
 
   React.useEffect(() => {
     const conversations = LocalStorageStore.getInstance().get('conversations');
-    console.log('bndjk', conversations[0].messages);
-
     setMessages(conversations[0].messages);
+
+    setIsChatEnabled(LocalStorageStore.getInstance().get('openaiapikey').length > 0);
   }, []);
 
   const addMessage = (message: ChatMessage) => {
@@ -66,14 +67,21 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
       </MessageContainer>
       <UserInputContainer>
         <InputContainer className='form-group-small'>
-          <input className='input input-small' type='text' value={currentQuery} onChange={e => setCurrentQuery(e.target.value)} />
+          <input
+            className='input input-small'
+            type='text'
+            value={currentQuery}
+            onChange={e => setCurrentQuery(e.target.value)}
+            disabled={!isChatEnabled}
+          />
         </InputContainer>
         <Button
           className='button-icon button-icon-small icon-invitation'
           type='button'
-          disabled={currentQuery.length === 0}
+          disabled={!isChatEnabled || currentQuery.length === 0}
           onClick={() => onSendMessage(currentQuery)}></Button>
       </UserInputContainer>
+      {!isChatEnabled && <Error className='cs1 ce12 p-small'>You have to setup an OpenAI API key in order to use the chatbot.</Error>}
     </Container>
   );
 };
@@ -108,4 +116,8 @@ const InputContainer = styled.div`
 
 const Button = styled.button`
   margin-left: 16px;
+`;
+
+const Error = styled.div`
+  color: var(--red600);
 `;
