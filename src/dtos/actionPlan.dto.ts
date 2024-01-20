@@ -9,6 +9,7 @@ export interface ActionPlanItem {
   intent: ActionIntent;
   positiveCaption?: string;
   negativeCaption?: string;
+  additionalUserFeedback?: string;
 }
 
 export interface ActionPlan {
@@ -47,6 +48,22 @@ export const findRelevantLines = (message: string) => {
       (trimmedLine.startsWith('-') || trimmedLine.startsWith('*') || trimmedLine.startsWith('•') || /^\d+\./.test(trimmedLine))
     );
   });
+};
+
+export const onAnswer = (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {
+  console.log('onAnswer', actionPlanItem.intent, message);
+
+  if (actionPlanItem.intent === 'time') {
+    conversation.workshop.desiredOutcome = message;
+  } else if (actionPlanItem.intent === 'participants') {
+    conversation.workshop.duration = message;
+  } else if (actionPlanItem.intent === 'title') {
+    conversation.workshop.participantCount = message;
+  } else if (actionPlanItem.intent === 'confirmation') {
+    conversation.workshop.titleInformation = message;
+  }
+
+  conversation.currentStep = conversation.currentStep + 1;
 };
 
 export const onPositive = (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {

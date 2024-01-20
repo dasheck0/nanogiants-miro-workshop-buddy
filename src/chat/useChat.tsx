@@ -23,6 +23,8 @@ export const useChat = () => {
       content: message.message,
     }));
 
+    console.log('prom', props.prompt, props.context);
+
     const stream = await props.openaiClient.beta.chat.completions.stream({
       messages: [
         {
@@ -34,7 +36,6 @@ export const useChat = () => {
           You can put important words between asterisks to emphasize them.
           `,
         },
-        ...conversationHistory,
         { role: 'user', content: props.prompt },
       ],
       model: 'gpt-3.5-turbo-16k-0613',

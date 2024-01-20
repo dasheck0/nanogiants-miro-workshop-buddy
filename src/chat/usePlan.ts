@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActionPlanItem, defaultPlan, onNegative, onPositive } from '../dtos/actionPlan.dto';
+import { ActionPlanItem, defaultPlan, onAnswer, onNegative, onPositive } from '../dtos/actionPlan.dto';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
 import { Conversation } from './../dtos/chat.dto';
+import { Workshop } from './../dtos/workshop.dto';
 import { useChatFlow } from './useChatFlow';
 
 export const usePlan = () => {
@@ -13,6 +14,7 @@ export const usePlan = () => {
 
   const [conversation, setConversation] = useState<Conversation | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [workshop, setWorkshop] = useState<Workshop | undefined>(undefined);
 
   useEffect(() => {
     if (conversation) {
@@ -88,6 +90,8 @@ export const usePlan = () => {
       const actionItem = [...actionPlanItems, ...conversation.additionalPlanItems][conversation.currentStep];
 
       if (actionItem) {
+        actionItem.additionalUserFeedback = message;
+
         console.log('actionItem', actionItem);
         addMessage({
           uuid: generateUuidV4(),
@@ -99,6 +103,7 @@ export const usePlan = () => {
         try {
           const completedStream = await flow({
             userPrompt: actionItem.instruction,
+            additionalUserFeedback: actionItem.additionalUserFeedback,
             history: conversation.messages,
           });
 
@@ -113,7 +118,8 @@ export const usePlan = () => {
 
           console.log('current"#,', actionItem);
           if (actionItem.type === 'question') {
-            setCurrentStep(conversation.currentStep + 1);
+            onAnswer(conversation, message, actionItem);
+            // setCurrentStep(conversation.currentStep + 1);
           }
         } catch (error) {
           console.error(error);

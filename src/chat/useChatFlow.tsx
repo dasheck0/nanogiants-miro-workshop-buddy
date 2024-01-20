@@ -5,6 +5,7 @@ import { useChat } from './useChat';
 
 export interface ChatFlowProps {
   userPrompt: string;
+  additionalUserFeedback?: string;
   history: ChatMessage[];
 }
 
@@ -22,9 +23,13 @@ export const useChatFlow = () => {
       .map(item => `${item.message}: ${item.answeredByUser ?? ''}`)
       .join('\n');
 
+    const additionalUserFeedback = props.additionalUserFeedback
+      ? `. Please respect the users feedback: ${props.additionalUserFeedback}`
+      : '';
+
     return await query({
       history: props.history,
-      prompt: props.userPrompt,
+      prompt: `${props.userPrompt}${additionalUserFeedback}`,
       openaiClient: openai,
       context,
     });
