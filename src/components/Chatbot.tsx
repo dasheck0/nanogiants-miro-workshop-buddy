@@ -11,7 +11,17 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
   const [currentQuery, setCurrentQuery] = React.useState<string>('');
   const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(false);
-  const { query } = useChat();
+  const { query, streamedResponse } = useChat();
+
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages, streamedResponse]);
 
   React.useEffect(() => {
     const conversations = LocalStorageStore.getInstance().get('conversations');
@@ -28,6 +38,11 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
     LocalStorageStore.getInstance().set('conversations', [{ messages }]);
   }, [messages]);
 
+  const onDeleteConversation = async () => {
+    setMessages([]);
+    LocalStorageStore.getInstance().set('conversations', [{ messages: [] }]);
+  };
+
   const onSendMessage = async (message: string) => {
     const currentMessages = [...messages];
 
@@ -40,15 +55,18 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
     });
 
     try {
-      const response = await query({
+      const completedStream = await query({
         context: '',
         prompt: message,
         history: currentMessages,
       });
 
+      const finalResponse = completedStream();
+      setCurrentQuery('');
+
       addMessage({
         username: 'bot',
-        message: response[0],
+        message: finalResponse,
         timestamp: '2021-02-01 12:00:00',
         icon: 'https://i.imgur.com/T2WwVfS.png',
         isBotMessage: true,
@@ -64,6 +82,19 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
         {messages.map((message: ChatMessage, index: number) => (
           <ChatMessageItem information={message} key={index} />
         ))}
+        {streamedResponse && (
+          <ChatMessageItem
+            information={{
+              username: 'bot',
+              message: streamedResponse,
+              timestamp: new Date().toISOString(), // Temporary timestamp
+              icon: 'https://i.imgur.com/T2WwVfS.png',
+              isBotMessage: true,
+            }}
+            key='streamed-response'
+          />
+        )}
+        <div ref={messagesEndRef} />
       </MessageContainer>
       <UserInputContainer>
         <InputContainer className='form-group-small'>
@@ -72,14 +103,16 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
             type='text'
             value={currentQuery}
             onChange={e => setCurrentQuery(e.target.value)}
-            disabled={!isChatEnabled}
+            disabled={!isChatEnabled || streamedResponse.length > 0}
           />
         </InputContainer>
         <Button
           className='button-icon button-icon-small icon-invitation'
           type='button'
-          disabled={!isChatEnabled || currentQuery.length === 0}
+          disabled={!isChatEnabled || currentQuery.length === 0 || streamedResponse.length > 0}
           onClick={() => onSendMessage(currentQuery)}></Button>
+
+        <button className='button-icon button-icon-small icon-trash' type='button' onClick={() => onDeleteConversation()}></button>
       </UserInputContainer>
       {!isChatEnabled && <Error className='cs1 ce12 p-small'>You have to setup an OpenAI API key in order to use the chatbot.</Error>}
     </Container>

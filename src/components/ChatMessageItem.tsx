@@ -26,4 +26,5 @@ const Container = styled.div<{ isBot: boolean }>`
   outline-width: ${props => (props.isBot ? 0 : 1)}px;
   outline-color: green;
   margin-bottom: 1px;
+  margin-top: 1px;
 `;

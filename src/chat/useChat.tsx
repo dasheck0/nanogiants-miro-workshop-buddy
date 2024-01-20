@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { useState } from 'react';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 
@@ -10,7 +11,9 @@ export interface ChatProps {
 }
 
 export const useChat = () => {
-  const query = async (props: ChatProps): Promise<string[]> => {
+  const [streamedResponse, setStreamedResponse] = useState('');
+
+  const query = async (props: ChatProps) => {
     const content = `${props.context}\n${props.prompt}\n`;
     const temperature = props.temperature || 0.7;
 
@@ -24,16 +27,29 @@ export const useChat = () => {
       content: message.message,
     }));
 
-    const response = await openai.chat.completions.create({
+    const stream = await openai.beta.chat.completions.stream({
       messages: [...conversationHistory, { role: 'user', content }],
       model: 'gpt-3.5-turbo',
+      stream: true,
       temperature,
     });
 
-    return [response.choices[0].message.content ?? ''];
+    let finalResponse = '';
+
+    for await (const chunk of stream) {
+      const chunkContent = chunk.choices[0]?.delta?.content || '';
+      finalResponse += chunkContent;
+      setStreamedResponse(finalResponse);
+    }
+
+    return () => {
+      setStreamedResponse('');
+      return finalResponse;
+    };
   };
 
   return {
     query,
+    streamedResponse,
   };
 };
