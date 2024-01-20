@@ -1,15 +1,18 @@
+import { ActionPlanItem } from './actionPlan.dto';
 import { Workshop } from './workshop.dto';
 
 export interface ChatMessage {
-  username: string;
+  uuid: string;
   message: string;
   timestamp: string;
-  icon: string;
   isBotMessage: boolean;
+  actionItem?: ActionPlanItem;
+  answeredByUser?: string;
 }
 
 export interface Conversation {
   uuid: string;
+  currentStep: number;
   messages: ChatMessage[];
   workshop: Workshop;
 }

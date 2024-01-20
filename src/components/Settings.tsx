@@ -14,7 +14,7 @@ export const Settings = () => {
 
   return (
     <Container className='cs1 ce12 grid'>
-      <button className='button-icon button-icon-small icon-back-1 cs1 ce2' type='button' onClick={() => navigate(-1)}></button>
+      <button className='button-icon button-icon-small icon-back-1 cs1 ce2' type='button' onClick={() => navigate('/chat')}></button>
       <div className='cs3 ce12 h2'>Settings</div>
       <div className='form-group-small cs1 ce12'>
         <label htmlFor='openai-api-key'>OpenAI API Key</label>

@@ -1,12 +1,10 @@
 import OpenAI from 'openai';
-import { ActionPlan } from '../dtos/actionPlan.dto';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 import { useChat } from './useChat';
 
 export interface ChatFlowProps {
   userPrompt: string;
-  actionPlan: ActionPlan;
   history: ChatMessage[];
 }
 
@@ -19,20 +17,17 @@ export const useChatFlow = () => {
       dangerouslyAllowBrowser: true,
     });
 
-    const currentQuestion = props.actionPlan.items[props.actionPlan.currentStep];
-    console.log('currentQuestion', currentQuestion);
+    const context = props.history
+      .filter(item => item.isBotMessage)
+      .map(item => `${item.message}: ${item.answeredByUser ?? ''}`)
+      .join('\n');
 
-    if (currentQuestion) {
-      if (currentQuestion) {
-        return await query({
-          history: props.history,
-          prompt: currentQuestion.instruction,
-          openaiClient: openai,
-        });
-      }
-    }
-
-    return () => '';
+    return await query({
+      history: props.history,
+      prompt: props.userPrompt,
+      openaiClient: openai,
+      context,
+    });
   };
 
   return {

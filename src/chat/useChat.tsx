@@ -2,7 +2,6 @@ import OpenAI from 'openai';
 import { useState } from 'react';
 import { ChatMessage } from '../dtos/chat.dto';
 import { Workshop } from '../dtos/workshop.dto';
-import { LocalStorageStore } from '../store';
 
 export interface ChatProps {
   prompt: string;
@@ -10,6 +9,7 @@ export interface ChatProps {
   history: ChatMessage[];
   currentWorkshop?: Workshop;
   openaiClient: OpenAI;
+  context: string;
 }
 
 export const useChat = () => {
@@ -17,7 +17,6 @@ export const useChat = () => {
 
   const query = async (props: ChatProps) => {
     const temperature = props.temperature || 0.7;
-    const actionPlan = LocalStorageStore.getInstance().get('actionplan');
 
     const conversationHistory: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = props.history.map((message: ChatMessage) => ({
       role: message.isBotMessage ? 'assistant' : 'user',
@@ -30,8 +29,8 @@ export const useChat = () => {
           role: 'system',
           content: `You are an expert when it comes to creating workshops in miro. You help the user to plan a workshop step by step. 
           For this you need to better understand what the users intentions are.
-          You follow a given plan and get instructions for each step.
-          Instruction:  ${JSON.stringify(actionPlan)}.
+          You follow a given plan and get instructions for each step. Here is the information you already know:
+          ${props.context}          
           `,
         },
         ...conversationHistory,

@@ -1,13 +1,11 @@
-import { ActionPlan, buildEmptyPlan } from '../dtos/actionPlan.dto';
-import { Conversation } from '../dtos/chat.dto';
+import { ChatMessage, Conversation } from '../dtos/chat.dto';
 
-type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'actionplan' | 'currentConversation';
+type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation';
 
 interface StoreData {
   openaiapikey: string;
   conversations: Conversation[];
   currentConversation?: string;
-  actionplan: ActionPlan;
 }
 
 type Store = {
@@ -23,7 +21,6 @@ export class LocalStorageStore {
   private constructor() {
     this.store = {
       openaiapikey: '',
-      actionplan: buildEmptyPlan(),
       currentConversation: undefined,
       conversations: [],
     };
@@ -40,7 +37,6 @@ export class LocalStorageStore {
   }
 
   get<T extends LocalStorageStoreType>(key: T): Store[T] {
-    console.log('hfdjskfhdjk', key, this.store[key]);
     return this.store[key];
   }
 
@@ -52,6 +48,38 @@ export class LocalStorageStore {
 
   remove(key: LocalStorageStoreType) {
     delete this.store[key];
+    this.saveToLocalStorage();
+  }
+
+  public updateConversation(conversation: Conversation) {
+    const index = this.store.conversations.findIndex(c => c.uuid === conversation.uuid);
+
+    if (index === -1) {
+      this.store.conversations.push(conversation);
+    } else {
+      this.store.conversations[index] = conversation;
+    }
+
+    this.saveToLocalStorage();
+  }
+
+  public addMessageToConversation(conversationUuid: string, message: ChatMessage) {
+    const conversation = this.store.conversations.find(c => c.uuid === conversationUuid);
+
+    if (conversation) {
+      conversation.messages.push(message);
+    }
+
+    this.saveToLocalStorage();
+  }
+
+  public setMessagesForConversation(conversationUuid: string, messages: ChatMessage[]) {
+    const conversation = this.store.conversations.find(c => c.uuid === conversationUuid);
+
+    if (conversation) {
+      conversation.messages = messages;
+    }
+
     this.saveToLocalStorage();
   }
 
