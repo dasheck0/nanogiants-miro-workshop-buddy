@@ -4,7 +4,6 @@ import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
 import { Conversation } from './../dtos/chat.dto';
-import { Workshop } from './../dtos/workshop.dto';
 import { useChatFlow } from './useChatFlow';
 
 export const usePlan = () => {
@@ -14,7 +13,6 @@ export const usePlan = () => {
 
   const [conversation, setConversation] = useState<Conversation | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [workshop, setWorkshop] = useState<Workshop | undefined>(undefined);
 
   useEffect(() => {
     if (conversation) {
@@ -28,13 +26,6 @@ export const usePlan = () => {
       LocalStorageStore.getInstance().set('currentConversation', conversation.uuid);
     }
   }, [messages]);
-
-  const setCurrentStep = (step: number) => {
-    if (conversation) {
-      conversation.currentStep = step;
-      setConversation(conversation);
-    }
-  };
 
   const addMessage = (message: ChatMessage) => {
     setMessages(currentMessages => [...currentMessages, message]);
