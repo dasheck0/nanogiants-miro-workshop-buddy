@@ -1,11 +1,12 @@
 import { ChatMessage, Conversation } from '../dtos/chat.dto';
 
-type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation';
+type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation' | 'hasSeenOnboarding';
 
 interface StoreData {
   openaiapikey: string;
   conversations: Conversation[];
   currentConversation?: string;
+  hasSeenOnboarding: boolean;
 }
 
 type Store = {
@@ -23,6 +24,7 @@ export class LocalStorageStore {
       openaiapikey: '',
       currentConversation: undefined,
       conversations: [],
+      hasSeenOnboarding: false,
     };
 
     this.loadFromLocalStorage();
