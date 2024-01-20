@@ -1,5 +1,6 @@
 export interface Workshop {
   title: string;
   description: string;
-  goals: string[]; 
+  goals: string[];
+  durationInMinutes: number;
 }

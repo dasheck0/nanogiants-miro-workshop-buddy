@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { LocalStorageStore } from '../store';
 
 export const Settings = () => {
   const [openaiApiKey, setOpenaiApiKey] = React.useState<string>(LocalStorageStore.getInstance().get('openaiapikey') || '');
+  const navigate = useNavigate();
 
   const updateItems = async () => {
     LocalStorageStore.getInstance().set('openaiapikey', openaiApiKey);
@@ -12,7 +14,8 @@ export const Settings = () => {
 
   return (
     <Container className='cs1 ce12 grid'>
-      <h1 className='cs1 ce12 h1'>Settings</h1>
+      <button className='button-icon button-icon-small icon-back-1 cs1 ce2' type='button' onClick={() => navigate(-1)}></button>
+      <div className='cs3 ce12 h2'>Settings</div>
       <div className='form-group-small cs1 ce12'>
         <label htmlFor='openai-api-key'>OpenAI API Key</label>
         <input

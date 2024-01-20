@@ -1,3 +1,5 @@
+import { Workshop } from './workshop.dto';
+
 export interface ChatMessage {
   username: string;
   message: string;
@@ -8,4 +10,5 @@ export interface ChatMessage {
 
 export interface Conversation {
   messages: ChatMessage[];
+  workshop?: Workshop;
 }
