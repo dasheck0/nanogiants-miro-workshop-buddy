@@ -22,7 +22,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
   return (
     <Container className={contentClassName} isBot={props.information.isBotMessage}>
       <div className='grid cs1 ce12'>
-        <div className='cs1 ce12'>{props.information.message}</div>
+        <div className='cs1 ce12' dangerouslySetInnerHTML={{ __html: props.information.message.replaceAll('\n', '<br>') }}></div>
         {type === 'confirmation' && (
           <ButtonContainer className='cs1 ce12 grid'>
             <div className='cs1 ce6'>

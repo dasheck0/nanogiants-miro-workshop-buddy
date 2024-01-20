@@ -1,7 +1,7 @@
 import { Conversation } from './chat.dto';
 
 export type ActionType = 'question' | 'confirmation';
-export type ActionIntent = 'outcome' | 'time' | 'participants' | 'confirmation' | 'title';
+export type ActionIntent = 'outcome' | 'time' | 'participants' | 'confirmation' | 'title' | 'agenda';
 
 export interface ActionPlanItem {
   type: ActionType;
@@ -59,6 +59,20 @@ export const defaultPlan: Omit<ActionPlanItem, 'userAnswer'>[] = [
     },
     onPositive: conversation => {
       conversation.currentStep = 5;
+    },
+  },
+  {
+    instruction:
+      'Create an agenda for the workshop based on your current knowledge and ask if the user want to go with the create agenda. The agenda should be a bullet point list. Each bullet point should only contain the name of the topic with no explanation. Tell him that you want to tackle each topic one by one with him after this.',
+    type: 'confirmation',
+    intent: 'agenda',
+    negativeCaption: 'Create new',
+    positiveCaption: 'Use agenda',
+    onNegative: conversation => {
+      conversation.currentStep = 5;
+    },
+    onPositive: conversation => {
+      conversation.currentStep = 6;
     },
   },
 ];
