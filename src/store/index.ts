@@ -1,7 +1,18 @@
-type LocalStorageStoreType = 'openaiapikey';
+import { Conversation } from '../dtos/chat.dto';
+
+type LocalStorageStoreType = 'openaiapikey' | 'conversations';
+
+interface StoreData {
+  openaiapikey: string;
+  conversations: Conversation[];
+}
+
+type Store = {
+  [K in LocalStorageStoreType]: StoreData[K];
+};
 
 export class LocalStorageStore {
-  private store: Record<LocalStorageStoreType, any>;
+  private store: Store;
   private static instance: LocalStorageStore;
 
   private readonly storeName: string = 'mmp_workshop_buddy';
@@ -9,6 +20,19 @@ export class LocalStorageStore {
   private constructor() {
     this.store = {
       openaiapikey: '',
+      conversations: [
+        {
+          messages: [
+            {
+              username: 'Workshop Buddy',
+              message: 'Hello, I am your Workshop Buddy. I can help you with the workshop. What would you like to know?',
+              timestamp: new Date().toISOString(),
+              icon: 'https://avatars.githubusercontent.com/u/52085248?v=4',
+              isBotMessage: true,
+            },
+          ],
+        },
+      ],
     };
 
     this.loadFromLocalStorage();
@@ -22,11 +46,13 @@ export class LocalStorageStore {
     return LocalStorageStore.instance;
   }
 
-  get(key: LocalStorageStoreType) {
+  get<T extends LocalStorageStoreType>(key: T): Store[T] {
+    console.log('hfdjskfhdjk', key, this.store[key]);
     return this.store[key];
   }
 
-  set<T>(key: LocalStorageStoreType, value: T) {
+  public set<T extends LocalStorageStoreType>(key: T, value: Store[T]) {
+    console.log('Setting', key, value);
     this.store[key] = value;
     this.saveToLocalStorage();
   }

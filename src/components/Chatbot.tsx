@@ -1,254 +1,78 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useChat } from '../chat/useChat';
 import { ChatMessage } from '../dtos/chat.dto';
+import { LocalStorageStore } from '../store';
 import { ChatMessageItem } from './ChatMessageItem';
 
 export interface ChatbotProps {}
 
 export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+  const [currentQuery, setCurrentQuery] = React.useState<string>('');
+  const { query } = useChat();
 
   React.useEffect(() => {
-    setMessages([
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-      {
-        username: 'bot',
-        message: 'Hello, how can I help you?',
-        timestamp: '2021-02-01 12:00:00',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: true,
-      },
-      {
-        username: 'stefan',
-        message: 'I need help with my order',
-        timestamp: '2021-02-01 12:00:01',
-        icon: 'https://i.imgur.com/T2WwVfS.png',
-        isBotMessage: false,
-      },
-    ]);
+    const conversations = LocalStorageStore.getInstance().get('conversations');
+    console.log('bndjk', conversations[0].messages);
+
+    setMessages(conversations[0].messages);
   }, []);
+
+  const addMessage = (message: ChatMessage) => {
+    setMessages(currentMessages => [...currentMessages, message]);
+  };
+
+  React.useEffect(() => {
+    LocalStorageStore.getInstance().set('conversations', [{ messages }]);
+  }, [messages]);
+
+  const onSendMessage = async (message: string) => {
+    const currentMessages = [...messages];
+
+    addMessage({
+      username: 'user',
+      message,
+      timestamp: '2021-02-01 12:00:00',
+      icon: 'https://i.imgur.com/T2WwVfS.png',
+      isBotMessage: false,
+    });
+
+    try {
+      const response = await query({
+        context: '',
+        prompt: message,
+        history: currentMessages,
+      });
+
+      addMessage({
+        username: 'bot',
+        message: response[0],
+        timestamp: '2021-02-01 12:00:00',
+        icon: 'https://i.imgur.com/T2WwVfS.png',
+        isBotMessage: true,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Container className='cs1 ce12'>
       <MessageContainer className='grid'>
-        {messages.map((message: ChatMessage) => (
-          <ChatMessageItem information={message} />
+        {messages.map((message: ChatMessage, index: number) => (
+          <ChatMessageItem information={message} key={index} />
         ))}
       </MessageContainer>
       <UserInputContainer>
         <InputContainer className='form-group-small'>
-          <input className='input input-small' type='text' />
+          <input className='input input-small' type='text' value={currentQuery} onChange={e => setCurrentQuery(e.target.value)} />
         </InputContainer>
-        <Button className='button-icon button-icon-small icon-invitation' type='button'></Button>
+        <Button
+          className='button-icon button-icon-small icon-invitation'
+          type='button'
+          disabled={currentQuery.length === 0}
+          onClick={() => onSendMessage(currentQuery)}></Button>
       </UserInputContainer>
     </Container>
   );

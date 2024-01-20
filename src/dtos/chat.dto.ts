@@ -3,5 +3,9 @@ export interface ChatMessage {
   message: string;
   timestamp: string;
   icon: string;
-  isBotMessage: boolean
+  isBotMessage: boolean;
+}
+
+export interface Conversation {
+  messages: ChatMessage[];
 }
