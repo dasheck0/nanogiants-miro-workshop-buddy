@@ -1,10 +1,13 @@
+import { ActionPlan, buildEmptyPlan } from '../dtos/actionPlan.dto';
 import { Conversation } from '../dtos/chat.dto';
 
-type LocalStorageStoreType = 'openaiapikey' | 'conversations';
+type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'actionplan' | 'currentConversation';
 
 interface StoreData {
   openaiapikey: string;
   conversations: Conversation[];
+  currentConversation?: string;
+  actionplan: ActionPlan;
 }
 
 type Store = {
@@ -20,19 +23,9 @@ export class LocalStorageStore {
   private constructor() {
     this.store = {
       openaiapikey: '',
-      conversations: [
-        {
-          messages: [
-            {
-              username: 'Workshop Buddy',
-              message: 'Hello, I am your Workshop Buddy. I can help you with the workshop. What would you like to know?',
-              timestamp: new Date().toISOString(),
-              icon: 'https://avatars.githubusercontent.com/u/52085248?v=4',
-              isBotMessage: true,
-            },
-          ],
-        },
-      ],
+      actionplan: buildEmptyPlan(),
+      currentConversation: undefined,
+      conversations: [],
     };
 
     this.loadFromLocalStorage();

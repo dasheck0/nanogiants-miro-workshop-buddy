@@ -9,6 +9,7 @@ export interface ChatMessage {
 }
 
 export interface Conversation {
+  uuid: string;
   messages: ChatMessage[];
-  workshop?: Workshop;
+  workshop: Workshop;
 }

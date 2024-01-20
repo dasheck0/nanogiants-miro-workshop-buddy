@@ -1,34 +1,42 @@
 import OpenAI from 'openai';
 import { useState } from 'react';
 import { ChatMessage } from '../dtos/chat.dto';
+import { Workshop } from '../dtos/workshop.dto';
 import { LocalStorageStore } from '../store';
 
 export interface ChatProps {
-  context: string;
   prompt: string;
   temperature?: number;
   history: ChatMessage[];
+  currentWorkshop?: Workshop;
+  openaiClient: OpenAI;
 }
 
 export const useChat = () => {
   const [streamedResponse, setStreamedResponse] = useState('');
 
   const query = async (props: ChatProps) => {
-    const content = `${props.context}\n${props.prompt}\n`;
     const temperature = props.temperature || 0.7;
-
-    const openai = new OpenAI({
-      apiKey: LocalStorageStore.getInstance().get('openaiapikey'),
-      dangerouslyAllowBrowser: true,
-    });
+    const actionPlan = LocalStorageStore.getInstance().get('actionplan');
 
     const conversationHistory: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = props.history.map((message: ChatMessage) => ({
       role: message.isBotMessage ? 'assistant' : 'user',
       content: message.message,
     }));
 
-    const stream = await openai.beta.chat.completions.stream({
-      messages: [...conversationHistory, { role: 'user', content }],
+    const stream = await props.openaiClient.beta.chat.completions.stream({
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert when it comes to creating workshops in miro. You help the user to plan a workshop step by step. 
+          For this you need to better understand what the users intentions are.
+          You follow a given plan and get instructions for each step.
+          Instruction:  ${JSON.stringify(actionPlan)}.
+          `,
+        },
+        ...conversationHistory,
+        { role: 'user', content: props.prompt },
+      ],
       model: 'gpt-3.5-turbo',
       stream: true,
       temperature,
@@ -44,6 +52,7 @@ export const useChat = () => {
 
     return () => {
       setStreamedResponse('');
+
       return finalResponse;
     };
   };

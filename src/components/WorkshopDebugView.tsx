@@ -8,10 +8,21 @@ export const WorkshopDebugView: React.FC<WorkshopDebugViewProps> = (props: Works
   const navigate = useNavigate();
 
   return (
-    <Container className='cs1 ce 12 grid'>
+    <Container className='cs1 ce12 grid'>
       <button className='button-icon button-icon-small icon-back-1 cs1 ce2' type='button' onClick={() => navigate(-1)}></button>
       <div className='cs3 ce12 h1'>Debug</div>
-      <div className='cs1 ce12'>{JSON.stringify(LocalStorageStore.getInstance().get('conversations')[0].workshop ?? {}, null, 2)}</div>
+      <div className='cs1 ce12'>
+        <pre>
+          {JSON.stringify(
+            {
+              actionPlan: LocalStorageStore.getInstance().get('actionplan'),
+              conversations: LocalStorageStore.getInstance().get('conversations'),
+            },
+            null,
+            2,
+          )}
+        </pre>
+      </div>
     </Container>
   );
 };

@@ -1,50 +1,104 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useChat } from '../chat/useChat';
-import { ChatMessage } from '../dtos/chat.dto';
+import { useChatFlow } from '../chat/useChatFlow';
+import { buildEmptyPlan } from '../dtos/actionPlan.dto';
+import { ChatMessage, Conversation } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
+import { generateUuidV4 } from '../utils';
 import { ChatMessageItem } from './ChatMessageItem';
 
 export interface ChatbotProps {}
 
 export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
+  const [currentConversation, setCurrentConversation] = React.useState<Conversation>();
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+
   const [currentQuery, setCurrentQuery] = React.useState<string>('');
   const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(false);
-  const { query, streamedResponse } = useChat();
+  const [sendButtonClass, setSendButtonClass] = React.useState<string>('button button-small button-primary');
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const { flow, streamedResponse } = useChatFlow();
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    findCurrentWorkshop();
+    setIsChatEnabled(LocalStorageStore.getInstance().get('openaiapikey').length > 0);
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, streamedResponse]);
+
+  React.useEffect(() => {
+    // update the messages of the curret conversation
+    if (currentConversation) {
+      const conversations = LocalStorageStore.getInstance().get('conversations');
+      const index = conversations.findIndex((conversation: Conversation) => conversation.uuid === currentConversation.uuid);
+
+      if (index > -1) {
+        conversations[index].messages = messages;
+        LocalStorageStore.getInstance().set('conversations', conversations);
+      }
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  React.useEffect(() => {
-    scrollToBottom();
-  }, [messages, streamedResponse]);
-
-  React.useEffect(() => {
-    const conversations = LocalStorageStore.getInstance().get('conversations');
-    setMessages(conversations[0].messages);
-
-    setIsChatEnabled(LocalStorageStore.getInstance().get('openaiapikey').length > 0);
-  }, []);
-
   const addMessage = (message: ChatMessage) => {
     setMessages(currentMessages => [...currentMessages, message]);
   };
 
-  React.useEffect(() => {
-    LocalStorageStore.getInstance().set('conversations', [{ messages }]);
-  }, [messages]);
-
   const onDeleteConversation = async () => {
-    setMessages([]);
-    LocalStorageStore.getInstance().set('conversations', [{ messages: [] }]);
+    startNewWorkshop();
+  };
+
+  const findCurrentWorkshop = () => {
+    const result = LocalStorageStore.getInstance()
+      .get('conversations')
+      .find((conversation: Conversation) => conversation.uuid === LocalStorageStore.getInstance().get('currentConversation'));
+
+    if (!result) {
+      startNewWorkshop();
+    } else {
+      setCurrentConversation(result);
+      setMessages(result.messages);
+
+      console.log('current conversation', result);
+    }
+  };
+
+  const startNewWorkshop = async () => {
+    const conversation: Conversation = {
+      uuid: generateUuidV4(),
+      messages: [
+        {
+          isBotMessage: true,
+          message:
+            'Hello, I am your Workshop Buddy. I will help you to plan your workshop. Before we start I need to know a little bit more about your workshop. To achieve best results answer as detailed as possible.',
+          timestamp: new Date().toISOString(),
+          username: 'bot',
+          icon: 'https://i.imgur.com/T2WwVfS.png',
+        },
+      ],
+      workshop: {},
+    };
+
+    LocalStorageStore.getInstance().set('conversations', [conversation]);
+    LocalStorageStore.getInstance().set('currentConversation', conversation.uuid);
+    LocalStorageStore.getInstance().set('actionplan', buildEmptyPlan());
+
+    setCurrentConversation(conversation);
+    setMessages(conversation.messages);
   };
 
   const onSendMessage = async (message: string) => {
+    setIsLoading(true);
     const currentMessages = [...messages];
+    setSendButtonClass('button button-small button-primary button-loading');
 
     addMessage({
       username: 'user',
@@ -54,15 +108,26 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
       isBotMessage: false,
     });
 
+    const currentPlan = LocalStorageStore.getInstance().get('actionplan');
+    const currentQuestion = currentPlan.items[currentPlan.currentStep];
+
+    currentQuestion.userAnswer.push(message);
+    currentPlan.currentStep = currentPlan.currentStep + 1;
+
+    console.log('currentQuestion', currentQuestion, currentPlan.currentStep);
+
     try {
-      const completedStream = await query({
-        context: '',
-        prompt: message,
+      const completedStream = await flow({
+        userPrompt: message,
         history: currentMessages,
+        actionPlan: currentPlan,
       });
 
       const finalResponse = completedStream();
       setCurrentQuery('');
+      setSendButtonClass('button button-small button-primary');
+
+      LocalStorageStore.getInstance().set('actionplan', currentPlan);
 
       addMessage({
         username: 'bot',
@@ -73,6 +138,8 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
       });
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -103,14 +170,16 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
             type='text'
             value={currentQuery}
             onChange={e => setCurrentQuery(e.target.value)}
-            disabled={!isChatEnabled || streamedResponse.length > 0}
+            disabled={!isChatEnabled || streamedResponse.length > 0 || isLoading}
           />
         </InputContainer>
-        <Button
-          className='button-icon button-icon-small icon-invitation'
+        <button
+          className={sendButtonClass}
           type='button'
-          disabled={!isChatEnabled || currentQuery.length === 0 || streamedResponse.length > 0}
-          onClick={() => onSendMessage(currentQuery)}></Button>
+          disabled={!isChatEnabled || currentQuery.length === 0 || isLoading}
+          onClick={() => onSendMessage(currentQuery)}>
+          {!isLoading && <span className='icon-invitation'></span>}
+        </button>
 
         <button className='button-icon button-icon-small icon-trash' type='button' onClick={() => onDeleteConversation()}></button>
       </UserInputContainer>
@@ -139,16 +208,12 @@ const UserInputContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 16px;
-  margin-bottom: 8px;
   width: 100%;
 `;
 
 const InputContainer = styled.div`
   flex: 1;
-`;
-
-const Button = styled.button`
-  margin-left: 16px;
+  margin-right: 16px;
 `;
 
 const Error = styled.div`
