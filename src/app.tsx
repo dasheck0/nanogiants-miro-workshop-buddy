@@ -2,28 +2,20 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { BrowserRouter } from 'react-router-dom';
+import styled from 'styled-components';
 import '../src/assets/style.css';
 import { Footer } from './components/Footer';
 import { Router } from './router';
 
 const App: React.FC = () => {
   return (
-    <div
-      className='grid h100'
-      style={{
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-      }}>
-      <div className='grid w100' style={{ overflow: 'scroll' }}>
+    <MainContainer className='grid'>
+      <ContentContainer className='grid'>
         <Router />
-      </div>
+      </ContentContainer>
 
       <Footer />
-    </div>
+    </MainContainer>
   );
 };
 
@@ -34,3 +26,17 @@ root.render(
     <App />
   </BrowserRouter>,
 );
+
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const ContentContainer = styled.div`
+  overflow: scroll;
+  width: 100%;
+`;

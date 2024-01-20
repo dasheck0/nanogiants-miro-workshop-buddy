@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import { LocalStorageStore } from '../store';
 
 export const Settings = () => {
@@ -25,9 +26,14 @@ export const Settings = () => {
         />
       </div>
 
-      <button className='cs1 ce12 button button-primary button-small' style={{ textAlign: 'center', justifyContent: 'center' }} onClick={() => updateItems()}>
+      <Button className='cs1 ce12 button button-primary button-small' onClick={() => updateItems()}>
         Save
-      </button>
+      </Button>
     </>
   );
 };
+
+const Button = styled.button`
+  text-align: center;
+  justify-content: center;
+`;
