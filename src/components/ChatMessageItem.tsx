@@ -4,9 +4,9 @@ import { ChatMessage } from '../dtos/chat.dto';
 
 export interface ChatMessageItemProps {
   information: ChatMessage;
-  onPositive?: (caption: string, actionItem?: ActionPlanItem) => void;
+  onPositive?: (caption: string, message: string, actionItem?: ActionPlanItem) => void;
   onPositiveCaption?: string;
-  onNegative?: (caption: string, actionItem?: ActionPlanItem) => void;
+  onNegative?: (caption: string, message: string, actionItem?: ActionPlanItem) => void;
   onNegativeCaption?: string;
   isLatestBotMessage?: boolean;
 }
@@ -15,9 +15,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
   const length = 8;
   const contentClassName = `grid cs${props.information.isBotMessage ? 1 : 3} ce${props.information.isBotMessage ? 1 + length : 3 + length}`;
 
-  const type = props.information.actionItem?.type;
-  const positiveCaption = props.onPositiveCaption ?? 'Yes';
-  const negativeCaption = props.onNegativeCaption ?? 'No';
+  const actionItem = props.information.actionItem;
+
+  const type = actionItem?.type;
+  const positiveCaption = actionItem?.positiveCaption ?? 'Yes';
+  const negativeCaption = actionItem?.negativeCaption ?? 'No';
 
   return (
     <Container className={contentClassName} isBot={props.information.isBotMessage}>
@@ -28,7 +30,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
             <div className='cs1 ce6'>
               <Button
                 className='w100 button button-primary button-small'
-                onClick={() => props.onPositive?.(positiveCaption, props.information.actionItem)}
+                onClick={() => props.onPositive?.(positiveCaption, props.information.message, props.information.actionItem)}
                 disabled={!props.isLatestBotMessage}>
                 {positiveCaption}
               </Button>
@@ -36,9 +38,9 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
             <div className='cs7 ce12'>
               <Button
                 className='w100 button button-secondary button-small'
-                onClick={() => props.onNegative?.(negativeCaption, props.information.actionItem)}
+                onClick={() => props.onNegative?.(negativeCaption, props.information.message, props.information.actionItem)}
                 disabled={!props.isLatestBotMessage}>
-                {props.onNegativeCaption ?? 'No'}
+                {negativeCaption}
               </Button>
             </div>
           </ButtonContainer>

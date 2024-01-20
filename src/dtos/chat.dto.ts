@@ -15,4 +15,5 @@ export interface Conversation {
   currentStep: number;
   messages: ChatMessage[];
   workshop: Workshop;
+  additionalPlanItems: ActionPlanItem[];
 }

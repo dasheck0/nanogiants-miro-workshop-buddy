@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActionPlanItem, defaultPlan } from '../dtos/actionPlan.dto';
+import { ActionPlanItem, defaultPlan, onNegative, onPositive } from '../dtos/actionPlan.dto';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
@@ -58,6 +58,7 @@ export const usePlan = () => {
       uuid: generateUuidV4(),
       currentStep: 0,
       workshop: {},
+      additionalPlanItems: [],
       messages: [
         {
           uuid: generateUuidV4(),
@@ -84,7 +85,7 @@ export const usePlan = () => {
         latestBotMessage.answeredByUser = message;
       }
 
-      const actionItem = actionPlanItems[conversation.currentStep];
+      const actionItem = [...actionPlanItems, ...conversation.additionalPlanItems][conversation.currentStep];
 
       if (actionItem) {
         console.log('actionItem', actionItem);
@@ -110,7 +111,10 @@ export const usePlan = () => {
             actionItem,
           });
 
-          setCurrentStep(conversation.currentStep + 1);
+          console.log('current"#,', actionItem);
+          if (actionItem.type === 'question') {
+            setCurrentStep(conversation.currentStep + 1);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -122,24 +126,29 @@ export const usePlan = () => {
     }
   };
 
-  const handleOnPositive = (caption: string, actionItem?: ActionPlanItem) => {
+  const handleOnPositive = (caption: string, message: string, actionItem?: ActionPlanItem) => {
     if (actionItem && conversation) {
       const matchingActionItem = findMatchingActionItemInPlan(actionItem);
-      console.log('handle positive', matchingActionItem);
+
+      console.log('handle positive', matchingActionItem, message);
 
       if (matchingActionItem) {
-        matchingActionItem.onPositive?.(conversation);
+        onPositive(conversation, message, matchingActionItem);
+
+        //matchingActionItem.onPositive?.(conversation, message);
         handleUserMessage(caption);
       }
     }
   };
 
-  const handleOnNegative = (caption: string, actionItem?: ActionPlanItem) => {
+  const handleOnNegative = (caption: string, message: string, actionItem?: ActionPlanItem) => {
     if (actionItem && conversation) {
       const matchingActionItem = findMatchingActionItemInPlan(actionItem);
+      console.log('handle negative', matchingActionItem, message);
 
       if (matchingActionItem) {
-        matchingActionItem.onNegative?.(conversation);
+        // matchingActionItem.onNegative?.(conversation, message);
+        onNegative(conversation, message, matchingActionItem);
         handleUserMessage(caption);
       }
     }
@@ -150,7 +159,9 @@ export const usePlan = () => {
       return null;
     }
 
-    return actionPlanItems.find(item => item.instruction === actionItem.instruction) ?? null;
+    return (
+      [...actionPlanItems, ...(conversation?.additionalPlanItems || [])].find(item => item.instruction === actionItem.instruction) ?? null
+    );
   };
 
   return {
@@ -161,6 +172,9 @@ export const usePlan = () => {
     handleUserMessage,
     messages,
     streamedResponse,
-    currentAction: conversation ? actionPlanItems[conversation.currentStep - 1] : undefined,
+    currentStep: conversation ? conversation.currentStep : 0,
+    currentAction: conversation
+      ? [...actionPlanItems, ...(conversation?.additionalPlanItems || [])][conversation.currentStep - 1]
+      : undefined,
   };
 };

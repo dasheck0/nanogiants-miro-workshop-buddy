@@ -31,12 +31,13 @@ export const useChat = () => {
           For this you need to better understand what the users intentions are.
           You follow a given plan and get instructions for each step. Here is the information you already know:
           ${props.context}          
+          You can put important words between asterisks to emphasize them.
           `,
         },
         ...conversationHistory,
         { role: 'user', content: props.prompt },
       ],
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-3.5-turbo-16k-0613',
       stream: true,
       temperature,
     });

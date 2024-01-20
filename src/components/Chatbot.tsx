@@ -18,6 +18,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
     handleUserMessage,
     startNewConversation,
     currentAction,
+    currentStep,
   } = usePlan();
 
   const [currentQuery, setCurrentQuery] = React.useState<string>('');
@@ -107,6 +108,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
 
         <button className='button-icon button-icon-small icon-trash' type='button' onClick={() => startNewConversation()}></button>
       </UserInputContainer>
+      Current: {currentStep}
       {!isChatEnabled && <Error className='cs1 ce12 p-small'>You have to setup an OpenAI API key in order to use the chatbot.</Error>}
     </Container>
   );
