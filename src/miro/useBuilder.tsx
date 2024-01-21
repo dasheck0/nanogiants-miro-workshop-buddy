@@ -1,21 +1,19 @@
-import { Frame, StickyNote, StickyNoteColor, Text } from '@mirohq/websdk-types';
+import { Frame } from '@mirohq/websdk-types';
 import { useEffect, useState } from 'react';
+import { Position, WorkshopFrame } from '../dtos/miro.dto';
 import { LocalStorageStore } from '../store';
-import { defaultDimensions, defaultPalette } from '../theme/palette';
-
-export interface WorkshopFrame {
-  frame: Frame;
-  rowIndex: number;
-}
-
-interface Position {
-  x: number;
-  y: number;
-}
+import { defaultDimensions } from '../theme/palette';
+import { useFrames } from './useFrames';
+import { useStickies } from './useStickies';
+import { useTextItems } from './useTextItems';
 
 export const useBuilder = () => {
   const [frames, setFrames] = useState<WorkshopFrame[]>([]);
   const [origin, setOrigin] = useState<Position>({ x: 0, y: 0 });
+
+  const { createStickyPool } = useStickies();
+  const { createHeading, createSubHeading, createBody } = useTextItems();
+  const { createFrame } = useFrames();
 
   useEffect(() => {
     if (frames.length > 0) {
@@ -61,32 +59,6 @@ export const useBuilder = () => {
     setFrames([...frames, { frame, rowIndex }]);
   };
 
-  const calculateOriginForNewFrame = (desiredRowIndex: number): Position => {
-    console.log('existing feame', frames);
-
-    if (frames.length === 0) {
-      return origin;
-    }
-
-    const framesInRow = frames.filter(frame => frame.rowIndex === desiredRowIndex);
-    const frameAtMostRight = framesInRow.reduce((prev, current) => (prev.frame.x > current.frame.x ? prev : current));
-
-    if (frameAtMostRight) {
-      return {
-        x: frameAtMostRight.frame.x + frameAtMostRight.frame.width + defaultDimensions.frameGap,
-        y: frameAtMostRight.frame.y,
-      };
-    } else {
-      const framesAbove = frames.filter(frame => frame.rowIndex === desiredRowIndex - 1);
-      const y = framesAbove[0]?.frame.y + framesAbove[0]?.frame.height + defaultDimensions.frameGap || origin.y;
-
-      return {
-        x: origin.x,
-        y,
-      };
-    }
-  };
-
   const createAgendaItemFrame = async ({
     title,
     description,
@@ -98,19 +70,9 @@ export const useBuilder = () => {
     duration: string;
     desiredOutcome: string;
   }) => {
-    const position = calculateOriginForNewFrame(0);
-    const width = 300;
-
-    const frame = await miro.board.createFrame({
-      title,
-      x: position.x,
-      y: position.y,
-      width,
-      height: width,
-      style: {
-        fillColor: defaultPalette.primaryColor,
-      },
-    });
+    const frame = await createFrame(origin, frames, title, 300, 300);
+    const position = { x: frame.x, y: frame.y };
+    const width = frame.width;
 
     const paddedX = position.x + defaultDimensions.framePadding;
     const paddedY = position.y + defaultDimensions.framePadding;
@@ -156,122 +118,6 @@ export const useBuilder = () => {
     await miro.board.viewport.zoomTo(frame);
 
     addFrame(frame, 0);
-  };
-
-  const createHeading = async (
-    text: string,
-    position: Position,
-    width: number,
-    parent: Frame,
-    textAlign: 'center' | 'right' | 'left' = 'left',
-  ): Promise<Text> => {
-    return createText(text, position, width, 2, parent, textAlign);
-  };
-
-  const createSubHeading = async (
-    text: string,
-    position: Position,
-    width: number,
-    parent: Frame,
-    textAlign: 'center' | 'right' | 'left' = 'left',
-  ): Promise<Text> => {
-    return createText(text, position, width, 1.5, parent, textAlign);
-  };
-
-  const createBody = async (
-    text: string,
-    position: Position,
-    width: number,
-    parent: Frame,
-    textAlign: 'center' | 'right' | 'left' = 'left',
-  ): Promise<Text> => {
-    return createText(text, position, width, 1, parent, textAlign);
-  };
-
-  const createText = async (
-    text: string,
-    position: Position,
-    width: number,
-    fontSizeMultiplier: number,
-    parent: Frame,
-    textAlign: 'center' | 'right' | 'left',
-  ): Promise<Text> => {
-    const title = await miro.board.createText({
-      x: position.x - parent.width / 2 + width / 2,
-      y: position.y + (defaultDimensions.baseTextSize * fontSizeMultiplier) / 2 - parent.height / 2,
-      width,
-      content: text,
-      style: {
-        fontSize: defaultDimensions.baseTextSize * fontSizeMultiplier,
-        color: defaultPalette.textColor,
-        textAlign,
-      },
-    });
-
-    await parent.add(title);
-    return title;
-  };
-
-  const createStickyPool = async (position: Position, columnCount: number, availableHeight: number, parent: Frame) => {
-    const numberOfStickiesForHeight = Math.floor(availableHeight / (defaultDimensions.stickySize + defaultDimensions.itemGap));
-    const result: StickyNote[] = [];
-
-    for (let column = 0; column < columnCount; column++) {
-      for (let row = 0; row < numberOfStickiesForHeight; row++) {
-        const index = column * numberOfStickiesForHeight + row;
-
-        const sticky = await miro.board.createStickyNote({
-          content: '',
-          x:
-            position.x +
-            column * (defaultDimensions.stickySize + defaultDimensions.itemGap) -
-            parent.width / 2 +
-            defaultDimensions.stickySize / 2,
-          y:
-            position.y +
-            row * (defaultDimensions.stickySize + defaultDimensions.itemGap) -
-            parent.height / 2 +
-            defaultDimensions.stickySize / 2,
-          width: defaultDimensions.stickySize,
-          style: {
-            fillColor: sampleStickyNoteColor(index),
-          },
-        });
-
-        await parent.add(sticky);
-        result.push(sticky);
-      }
-    }
-
-    return result;
-  };
-
-  const sampleStickyNoteColor = (index?: number): StickyNoteColor => {
-    const availableColors = [
-      StickyNoteColor.Gray,
-      StickyNoteColor.LightYellow,
-      StickyNoteColor.Yellow,
-      StickyNoteColor.Orange,
-      StickyNoteColor.LightGreen,
-      StickyNoteColor.Green,
-      StickyNoteColor.DarkGreen,
-      StickyNoteColor.Cyan,
-      StickyNoteColor.LightPink,
-      StickyNoteColor.Pink,
-      StickyNoteColor.Violet,
-      StickyNoteColor.Red,
-      StickyNoteColor.LightBlue,
-      StickyNoteColor.Blue,
-      StickyNoteColor.DarkBlue,
-      StickyNoteColor.Black,
-    ];
-
-    if (index && index > availableColors.length) {
-      return StickyNoteColor.LightYellow;
-    }
-
-    const sampledIndex = index ?? Math.floor(Math.random() * availableColors.length);
-    return availableColors[sampledIndex];
   };
 
   return {
