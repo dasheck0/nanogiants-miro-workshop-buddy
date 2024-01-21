@@ -15,11 +15,12 @@ export const usePlan = () => {
   const [conversation, setConversation] = useState<Conversation | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  const { lastEvent } = useEventContext();
+  const { lastEvent, clearEvent } = useEventContext();
 
   useEffect(() => {
     if (lastEvent === 'startNewChat') {
       startNewConversation();
+      clearEvent();
     }
   }, [lastEvent]);
 
