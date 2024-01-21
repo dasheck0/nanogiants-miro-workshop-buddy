@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useEventContext } from '../EventContextProvider';
-import { ActionPlanItem, defaultPlan, onAnswer, onNegative, onPositive } from '../dtos/actionPlan.dto';
+import { ActionPlanItem, defaultPlan, onAnswer, useNegativeResponse, usePositiveResponse } from '../dtos/actionPlan.dto';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
@@ -16,6 +16,9 @@ export const usePlan = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const { lastEvent, clearEvent } = useEventContext();
+
+  const { onPositive, isLoading: isPositiveActionLoading } = usePositiveResponse();
+  const { onNegative } = useNegativeResponse();
 
   useEffect(() => {
     if (lastEvent === 'startNewChat') {
@@ -135,14 +138,15 @@ export const usePlan = () => {
     }
   };
 
-  const handleOnPositive = (caption: string, message: string, actionItem?: ActionPlanItem) => {
+  const handleOnPositive = async (caption: string, message: string, actionItem?: ActionPlanItem) => {
     if (actionItem && conversation) {
       const matchingActionItem = findMatchingActionItemInPlan(actionItem);
 
       console.log('handle positive', matchingActionItem, message);
 
       if (matchingActionItem) {
-        onPositive(conversation, message, matchingActionItem);
+        await onPositive(conversation, message, matchingActionItem);
+        console.log('HSJkfhdjkfghdsjfdzsiufzhdsjkfhdjfzds78');
 
         //matchingActionItem.onPositive?.(conversation, message);
         handleUserMessage(caption);
@@ -150,14 +154,14 @@ export const usePlan = () => {
     }
   };
 
-  const handleOnNegative = (caption: string, message: string, actionItem?: ActionPlanItem) => {
+  const handleOnNegative = async (caption: string, message: string, actionItem?: ActionPlanItem) => {
     if (actionItem && conversation) {
       const matchingActionItem = findMatchingActionItemInPlan(actionItem);
       console.log('handle negative', matchingActionItem, message);
 
       if (matchingActionItem) {
         // matchingActionItem.onNegative?.(conversation, message);
-        onNegative(conversation, message, matchingActionItem);
+        await onNegative(conversation, message, matchingActionItem);
         handleUserMessage(caption);
       }
     }
@@ -185,5 +189,6 @@ export const usePlan = () => {
     currentAction: conversation
       ? [...actionPlanItems, ...(conversation?.additionalPlanItems || [])][conversation.currentStep - 1]
       : undefined,
+    isPositiveActionLoading,
   };
 };

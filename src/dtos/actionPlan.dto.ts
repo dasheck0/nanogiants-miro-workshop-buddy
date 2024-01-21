@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useBuildMiroBoard } from '../miro/useBuildMiroBoard';
+import { LocalStorageStore } from '../store';
 import { Conversation } from './chat.dto';
 
 export type ActionType = 'question' | 'confirmation';
@@ -66,48 +69,90 @@ export const onAnswer = (conversation: Conversation, message: string, actionPlan
   conversation.currentStep = conversation.currentStep + 1;
 };
 
-export const onPositive = (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {
-  console.log('onPositive', conversation, message, actionPlanItem);
-  if (actionPlanItem.intent === 'confirmation') {
-    conversation.currentStep = conversation.currentStep + 1;
-  } else if (actionPlanItem.intent === 'title') {
-    conversation.currentStep = conversation.currentStep + 1;
-  } else if (actionPlanItem.intent === 'agenda') {
-    const relevantLines = findRelevantLines(message);
-    console.log('relevantLines', relevantLines);
+export const usePositiveResponse = () => {
+  const { build } = useBuildMiroBoard();
+  const [isLoading, setIsLoading] = useState(false);
 
-    const newPlanItems = relevantLines.map((line: string) => {
-      return createAgendaItem(line);
-    });
+  const onPositive = async (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {
+    console.log('onPositive', conversation, message, actionPlanItem);
+    if (actionPlanItem.intent === 'confirmation') {
+      conversation.currentStep = conversation.currentStep + 1;
+    } else if (actionPlanItem.intent === 'title') {
+      conversation.currentStep = conversation.currentStep + 1;
+    } else if (actionPlanItem.intent === 'agenda') {
+      const relevantLines = findRelevantLines(message);
+      console.log('relevantLines', relevantLines);
 
-    conversation.additionalPlanItems = newPlanItems;
-    conversation.currentStep = conversation.currentStep + 1;
+      const newPlanItems = relevantLines.map((line: string) => {
+        return createAgendaItem(line);
+      });
 
-    console.log('agenda item', newPlanItems);
-  } else if (actionPlanItem.intent === 'detailed_agenda') {
-    const relevantLines = findRelevantLines(message);
-    console.log('relevantLines', relevantLines);
+      conversation.additionalPlanItems = newPlanItems;
+      conversation.currentStep = conversation.currentStep + 1;
 
-    const newPlanItems = relevantLines.map((line: string) => {
-      return createDetailedAgendaItem(line);
-    });
+      console.log('agenda item', newPlanItems);
+    } else if (actionPlanItem.intent === 'detailed_agenda') {
+      const relevantLines = findRelevantLines(message);
+      console.log('relevantLines', relevantLines);
 
-    const cleanIndex = conversation.currentStep - defaultPlan.length;
-    conversation.additionalPlanItems.splice(cleanIndex + 1, 0, ...newPlanItems);
+      const newPlanItems = relevantLines.map((line: string) => {
+        return createDetailedAgendaItem(line);
+      });
 
-    conversation.currentStep = conversation.currentStep + 1;
-  } else if (actionPlanItem.intent === 'create_boards') {
-    // we are ceating the boards here
-    conversation.currentStep = conversation.currentStep + 1;
-  }
+      const cleanIndex = conversation.currentStep - defaultPlan.length;
+      console.log('Clean', cleanIndex);
+      LocalStorageStore.getInstance().set('currentRowIndex', cleanIndex);
+      conversation.additionalPlanItems.splice(cleanIndex + 1, 0, ...newPlanItems);
+
+      conversation.currentStep = conversation.currentStep + 1;
+    } else if (actionPlanItem.intent === 'create_boards') {
+      // we are ceating the boards here
+      console.log('act', actionPlanItem);
+      console.log('con', conversation);
+      console.log('msg', message);
+
+      const newMessage = `
+    You are a smart agent that is capable of finding the right function for the desired task. 
+    You will get instructions for building boards, frames or panes along with functions that you can call.
+    You can choose between 
+    - an agenda item board, which displays the aganda along with the goals if the current topic
+    - a single pane frame, which is suitable for a single activity
+    - a two pane frame, which is suitable for an activity that needs more explanation or has a companion activity (i.e. explaining some theory on that matter)
+    You must decide for a function to call and find the right arguments to pass to the function based on the following instructions:
+    ${message}
+    `;
+
+      try {
+        setIsLoading(true);
+        await build({ message: newMessage, rowIndex: LocalStorageStore.getInstance().get('currentRowIndex') });
+        conversation.currentStep = conversation.currentStep + 1;
+        console.log('hjfkfhdjk');
+      } catch (error) {
+        await miro.board.notifications.showError('Error while building boards');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return {
+    onPositive,
+    isLoading,
+  };
 };
 
-export const onNegative = (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {
-  console.log('onNegative', conversation, message, actionPlanItem);
+export const useNegativeResponse = () => {
+  const onNegative = async (conversation: Conversation, message: string, actionPlanItem: ActionPlanItem) => {
+    console.log('onNegative', conversation, message, actionPlanItem);
 
-  if (actionPlanItem.intent === 'confirmation') {
-    conversation.currentStep = 0;
-  }
+    if (actionPlanItem.intent === 'confirmation') {
+      conversation.currentStep = 0;
+    }
+  };
+
+  return {
+    onNegative,
+  };
 };
 
 export const defaultPlan: Omit<ActionPlanItem, 'userAnswer'>[] = [

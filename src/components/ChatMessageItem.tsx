@@ -10,6 +10,7 @@ export interface ChatMessageItemProps {
   onNegative?: (caption: string, message: string, actionItem?: ActionPlanItem) => void;
   onNegativeCaption?: string;
   isLatestBotMessage?: boolean;
+  isPositiveActionLoading?: boolean;
 }
 
 export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessageItemProps) => {
@@ -32,11 +33,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
           <ButtonContainer className='cs1 ce12 grid'>
             <div className='cs1 ce6'>
               <Button
-                className='w100 button button-primary button-small'
+                className={`w100 button button-primary button-small ${props.isPositiveActionLoading ? 'button-loading' : ''}`}
                 onClick={() =>
                   props.onPositive?.(`${positiveCaption}. ${additionalFeedback}`, props.information.message, props.information.actionItem)
                 }
-                disabled={!props.isLatestBotMessage}>
+                disabled={!props.isLatestBotMessage || props.isPositiveActionLoading}>
                 {positiveCaption}
               </Button>
             </div>
@@ -46,11 +47,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = (props: ChatMessa
                 onClick={() =>
                   props.onNegative?.(`${negativeCaption}. ${additionalFeedback}`, props.information.message, props.information.actionItem)
                 }
-                disabled={!props.isLatestBotMessage}>
+                disabled={!props.isLatestBotMessage || props.isPositiveActionLoading}>
                 {negativeCaption}
               </Button>
             </div>
-            {props.isLatestBotMessage && (
+            {props.isLatestBotMessage && !props.isPositiveActionLoading && (
               <div className='cs1 ce12 grid'>
                 <div className='cs1 ce12 p-small'>Additional feedback</div>
                 <div className='cs1 ce12 form-group form-group-small'>

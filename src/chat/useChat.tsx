@@ -23,7 +23,7 @@ export const useChat = () => {
       content: message.message,
     }));
 
-    console.log('prom', props.prompt, props.context);
+    // console.log('prom', props.prompt, props.context);
 
     const stream = await props.openaiClient.beta.chat.completions.stream({
       messages: [

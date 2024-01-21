@@ -34,7 +34,12 @@ export const useFrames = () => {
 
     if (allFramesInDesiredRow.length === 0) {
       // is there a frame above?
-      const framesAbove = frames2.filter(frame => boardStorage[frame.id] === desiredRowIndex - 1);
+      const framesAbove = frames2
+        .filter(frame => boardStorage[frame.id] < desiredRowIndex)
+        .sort((a, b) => {
+          // return the ones that are closest to the desiredRowIndex. The bigger the y coordinate the closer to the desired row index.
+          return b.y - a.y;
+        });
       console.log('framesAbove', framesAbove);
 
       const y = framesAbove[0]?.y + framesAbove[0]?.height + defaultDimensions.frameGap || origin.y;
@@ -60,33 +65,6 @@ export const useFrames = () => {
         return origin;
       }
     }
-
-    // console.log('existing feame', frames2);
-    // console.log('des', desiredRowIndex);
-
-    // const frameAtMostRight = allFramesInDesiredRow.reduce((prev, current) => (prev.x > current.x ? prev : current));
-    // console.log('frameAtMostRight', frameAtMostRight);
-
-    // if (frameAtMostRight) {
-    //   const r = {
-    //     x: frameAtMostRight.x + frameAtMostRight.width / 2 + defaultDimensions.frameGap,
-    //     y: frameAtMostRight.y,
-    //   };
-    //   console.log('r', r);
-    //   return r;
-    // } else {
-    //   const framesAbove = frames2.filter(frame => boardStorage[frame.id] === desiredRowIndex - 1);
-    //   console.log('framesAbove', framesAbove);
-
-    //   const y = framesAbove[0]?.y + framesAbove[0]?.height + defaultDimensions.frameGap || origin.y;
-
-    //   console.log('y', y);
-
-    //   return {
-    //     x: origin.x,
-    //     y,
-    //   };
-    // }
   };
 
   return {

@@ -9,8 +9,6 @@ import { useStickies } from './useStickies';
 import { useTextItems } from './useTextItems';
 
 export const useBuilder = () => {
-  console.log('MyComponent rendered');
-
   const [boardStorage, setBoardStorage] = useState<BoardStorage>(LocalStorageStore.getInstance().get('boardStorage') ?? {});
   const [origin, setOrigin] = useState<Position>({ x: 0, y: 0 });
 

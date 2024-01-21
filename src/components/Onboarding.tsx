@@ -19,13 +19,15 @@ interface OnboardingInformation {
 
 export const Onboarding: React.FC<OnboardingProps> = (props: OnboardingProps) => {
   const completeOnboarding = () => {
+    console.log('completeOnboarding');
+
     LocalStorageStore.getInstance().set('hasSeenOnboarding', true);
     props.onComplete();
   };
 
   const onboardingInformation: OnboardingInformation[] = [
     {
-      title: 'Facilitating an workshop and no idea where to start?',
+      title: 'Facilitating a workshop and no idea where to start?',
       description1: 'Look no further - you found your workshop buddy!',
       description2: "We've got this easy and fast, together! find out how, in the next slides",
       illustrationUrl: '/src/assets/images/onboarding01.svg',
@@ -72,16 +74,21 @@ export const Onboarding: React.FC<OnboardingProps> = (props: OnboardingProps) =>
           return <Indicator isActive={index === currentIndex} onClick={() => setCurrentIndex(index)}></Indicator>;
         })}
       </IndicatorRow>
+      {onboardingInformation[currentIndex].hasButton && (
+        <Button className='button button-primary' onClick={() => completeOnboarding()}>
+          Start now
+        </Button>
+      )}
     </Container>
   );
 };
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: scroll;
+  align-items: center;
 `;
 
 const IndicatorRow = styled.div`
@@ -90,6 +97,7 @@ const IndicatorRow = styled.div`
   justify-content: center;
   margin-top: 16px;
   flex: 1;
+  margin-bottom: 32px;
 `;
 
 const Indicator = styled.div<{ isActive: boolean }>`
@@ -102,4 +110,8 @@ const Indicator = styled.div<{ isActive: boolean }>`
   &:hover {
     cursor: pointer;
   }
+`;
+
+const Button = styled.button`
+  margin-top: 32px;
 `;
