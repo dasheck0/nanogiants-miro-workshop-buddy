@@ -24,7 +24,7 @@ export const useFrames = () => {
   const calculateOriginForNewFrame = async (desiredRowIndex: number, origin: Position): Promise<Position> => {
     const boardStorage = LocalStorageStore.getInstance().get('boardStorage');
 
-    const frames2: Frame[] = (await miro.board.get({ id: Object.keys(boardStorage) })) as Frame[];
+    const frames2: Frame[] = (await miro.board.experimental.get({ id: Object.keys(boardStorage) })) as Frame[];
 
     if (frames2.length === 0) {
       return origin;

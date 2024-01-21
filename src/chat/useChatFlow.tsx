@@ -13,7 +13,7 @@ export const useChatFlow = () => {
 
   const flow = async (props: ChatFlowProps) => {
     const openai = new OpenAI({
-      apiKey: "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",
+      apiKey: "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",
       dangerouslyAllowBrowser: true,
     });
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export const Settings = () => {
-  const [openaiApiKey, setOpenaiApiKey] = React.useState<string>('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');
+  const [openaiApiKey, setOpenaiApiKey] = React.useState<string>('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');
   const navigate = useNavigate();
 
   const updateItems = async () => {
@@ -22,7 +22,7 @@ export const Settings = () => {
           name='openai-api-key'
           className='input input-small'
           placeholder='Your OpenAI API Key'
-          value='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'
+          value='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'
           disabled={true}
         />
       </div>
