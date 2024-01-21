@@ -9,6 +9,8 @@ export interface OnboardingSlideProps {
   onPrevious: () => void;
   canScrollLeft: boolean;
   canScrollRight: boolean;
+  hasButton?: boolean;
+  onButtonClicked?: () => void;
 }
 
 export const OnboardingSlide: React.FC<OnboardingSlideProps> = (props: OnboardingSlideProps) => {
@@ -28,6 +30,11 @@ export const OnboardingSlide: React.FC<OnboardingSlideProps> = (props: Onboardin
           disabled={!props.canScrollRight}></Button>
       </div>
       <Description className=''>{props.description2}</Description>
+      {props.hasButton && (
+        <button className='button button-primary' onClick={props.onButtonClicked}>
+          Start now
+        </button>
+      )}
     </Container>
   );
 };

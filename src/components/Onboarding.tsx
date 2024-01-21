@@ -14,6 +14,7 @@ interface OnboardingInformation {
   description1: string;
   description2: string;
   illustrationUrl: string;
+  hasButton?: boolean;
 }
 
 export const Onboarding: React.FC<OnboardingProps> = (props: OnboardingProps) => {
@@ -46,13 +47,14 @@ export const Onboarding: React.FC<OnboardingProps> = (props: OnboardingProps) =>
       description1: 'I got you covered with tips, best pracises and helpful videos',
       description2: 'Start now and become the next workshop wizard',
       illustrationUrl: '/src/assets/images/onboarding04.svg',
+      hasButton: true,
     },
   ];
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   return (
-    <div className='cs1 ce12'>
+    <Container>
       <OnboardingSlide
         title={onboardingInformation[currentIndex].title}
         description1={onboardingInformation[currentIndex].description1}
@@ -62,21 +64,32 @@ export const Onboarding: React.FC<OnboardingProps> = (props: OnboardingProps) =>
         canScrollRight={currentIndex < onboardingInformation.length - 1}
         onNext={() => setCurrentIndex(currentIndex + 1)}
         onPrevious={() => setCurrentIndex(currentIndex - 1)}
+        hasButton={onboardingInformation[currentIndex].hasButton}
+        onButtonClicked={completeOnboarding}
       />
       <IndicatorRow>
         {onboardingInformation.map((_, index) => {
           return <Indicator isActive={index === currentIndex} onClick={() => setCurrentIndex(index)}></Indicator>;
         })}
       </IndicatorRow>
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+`;
 
 const IndicatorRow = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
   margin-top: 16px;
+  flex: 1;
 `;
 
 const Indicator = styled.div<{ isActive: boolean }>`
