@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import { useToolCall } from '../chat/useToolCall';
-import { LocalStorageStore } from '../store';
 import { createAgendaItemFunction, createSinglePaneItemFunction, createTwoPaneItemFunction } from './chatgptFunctions';
 import { useCreateAgendaItemBoard } from './useCreateAgendaItemBoard';
 import { useCreateSinglePaneBoard } from './useCreateSinglePaneBoard';
@@ -22,7 +21,7 @@ export const useBuildMiroBoard = () => {
     const availableFunctions = [createSinglePaneItemFunction, createTwoPaneItemFunction, createAgendaItemFunction];
 
     const openai = new OpenAI({
-      apiKey: LocalStorageStore.getInstance().get('openaiapikey'),
+      apiKey: "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",
       dangerouslyAllowBrowser: true,
     });
 

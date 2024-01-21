@@ -1,6 +1,5 @@
 import OpenAI from 'openai';
 import { ChatMessage } from '../dtos/chat.dto';
-import { LocalStorageStore } from '../store';
 import { useChat } from './useChat';
 
 export interface ChatFlowProps {
@@ -14,7 +13,7 @@ export const useChatFlow = () => {
 
   const flow = async (props: ChatFlowProps) => {
     const openai = new OpenAI({
-      apiKey: LocalStorageStore.getInstance().get('openaiapikey'),
+      apiKey: "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",
       dangerouslyAllowBrowser: true,
     });
 

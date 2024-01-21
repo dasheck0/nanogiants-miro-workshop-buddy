@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { usePlan } from '../chat/usePlan';
 import { ChatMessage } from '../dtos/chat.dto';
-import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
 import { ChatMessageItem } from './ChatMessageItem';
 
@@ -32,7 +31,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   useEffect(() => {
     initialize();
 
-    setIsChatEnabled(LocalStorageStore.getInstance().get('openaiapikey').length > 0);
+    setIsChatEnabled(true);
   }, []);
 
   useEffect(() => {

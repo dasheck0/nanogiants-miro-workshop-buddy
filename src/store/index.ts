@@ -2,7 +2,6 @@ import { ChatMessage, Conversation } from '../dtos/chat.dto';
 import { BoardStorage } from './../dtos/miro.dto';
 
 type LocalStorageStoreType =
-  | 'openaiapikey'
   | 'conversations'
   | 'currentConversation'
   | 'hasSeenOnboarding'
@@ -11,7 +10,6 @@ type LocalStorageStoreType =
   | 'currentRowIndex';
 
 interface StoreData {
-  openaiapikey: string;
   conversations: Conversation[];
   currentConversation?: string;
   hasSeenOnboarding: boolean;
@@ -32,7 +30,6 @@ export class LocalStorageStore {
 
   private constructor() {
     this.store = {
-      openaiapikey: '',
       currentConversation: undefined,
       conversations: [],
       hasSeenOnboarding: false,

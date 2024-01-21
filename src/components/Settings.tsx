@@ -1,14 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { LocalStorageStore } from '../store';
 
 export const Settings = () => {
-  const [openaiApiKey, setOpenaiApiKey] = React.useState<string>(LocalStorageStore.getInstance().get('openaiapikey') || '');
+  const [openaiApiKey, setOpenaiApiKey] = React.useState<string>('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');
   const navigate = useNavigate();
 
   const updateItems = async () => {
-    LocalStorageStore.getInstance().set('openaiapikey', openaiApiKey);
     await miro.board.notifications.showInfo('Settings saved successfully');
   };
 
@@ -24,8 +22,8 @@ export const Settings = () => {
           name='openai-api-key'
           className='input input-small'
           placeholder='Your OpenAI API Key'
-          value={openaiApiKey}
-          onChange={e => setOpenaiApiKey(e.target.value)}
+          value='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'
+          disabled={true}
         />
       </div>
 
