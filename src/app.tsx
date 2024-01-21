@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 
 import { BrowserRouter } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
-import '../src/assets/style.css';
 import { EventProvider, useEventContext } from './EventContextProvider';
+import './assets/style.css';
 import { Footer } from './components/Footer';
 import { Onboarding } from './components/Onboarding';
 import { SimpleModal } from './components/SimpleModal';

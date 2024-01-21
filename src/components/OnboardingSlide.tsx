@@ -30,7 +30,6 @@ export const OnboardingSlide: React.FC<OnboardingSlideProps> = (props: Onboardin
           disabled={!props.canScrollRight}></Button>
       </div>
       <Description className=''>{props.description2}</Description>
-      
     </Container>
   );
 };
