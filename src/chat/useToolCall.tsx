@@ -19,7 +19,7 @@ export const useToolCall = () => {
       messages: [
         {
           role: 'system',
-          content: `The user was asked to provide some information about a workshop. Your goal is to invoke functions that the user can utlize in order to create the relevant boards in miro. Call one of the functions`,
+          content: props.prompt,
         },
       ],
       // tool_choice: props.forceTool ? { type: 'function', function: { name: props.forceTool } } : 'auto',

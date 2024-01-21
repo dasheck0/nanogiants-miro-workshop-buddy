@@ -62,7 +62,7 @@ export const usePlan = () => {
 
     const newConversation: Conversation = {
       uuid: generateUuidV4(),
-      currentStep: 0,
+      currentStep: 1,
       workshop: {},
       additionalPlanItems: [],
       messages: [

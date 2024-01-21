@@ -14,7 +14,6 @@ export const Footer: React.FC<FooterProps> = (props: FooterProps) => {
       <VersionText className='cs1 ce4 p-small'>Version {version}</VersionText>
       <Container className='cs8 ce12'>
         <button className='button-icon button-icon-small icon-settings' type='button' onClick={() => props.onSettingsClick()}></button>
-        <button className='button-icon button-icon-small icon-comment-feedback' type='button' onClick={() => navigate('/debug')}></button>
       </Container>
     </FooterContainer>
   );

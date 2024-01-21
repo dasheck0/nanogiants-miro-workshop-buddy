@@ -107,8 +107,6 @@ export const usePositiveResponse = () => {
       conversation.currentStep = conversation.currentStep + 1;
     } else if (actionPlanItem.intent === 'create_boards') {
       // we are ceating the boards here
-      console.log('act', actionPlanItem);
-      console.log('con', conversation);
       console.log('msg', message);
 
       const newMessage = `
@@ -121,6 +119,8 @@ export const usePositiveResponse = () => {
     You must decide for a function to call and find the right arguments to pass to the function based on the following instructions:
     ${message}
     `;
+
+      console.log('newMessage', newMessage);
 
       try {
         setIsLoading(true);

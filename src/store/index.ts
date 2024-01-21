@@ -1,13 +1,7 @@
 import { ChatMessage, Conversation } from '../dtos/chat.dto';
 import { BoardStorage } from './../dtos/miro.dto';
 
-type LocalStorageStoreType =
-  | 'conversations'
-  | 'currentConversation'
-  | 'hasSeenOnboarding'
-  | 'frames'
-  | 'boardStorage'
-  | 'currentRowIndex';
+type LocalStorageStoreType = 'conversations' | 'currentConversation' | 'hasSeenOnboarding' | 'frames' | 'boardStorage' | 'currentRowIndex';
 
 interface StoreData {
   conversations: Conversation[];
@@ -32,7 +26,7 @@ export class LocalStorageStore {
     this.store = {
       currentConversation: undefined,
       conversations: [],
-      hasSeenOnboarding: false,
+      hasSeenOnboarding: true,
       frames: [],
       boardStorage: {},
       currentRowIndex: 0,
