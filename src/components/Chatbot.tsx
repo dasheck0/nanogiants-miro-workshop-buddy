@@ -105,8 +105,6 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
           onClick={() => onSendMessage(currentQuery)}>
           {!isLoading && <span className='icon-invitation'></span>}
         </button>
-
-        <button className='button-icon button-icon-small icon-trash' type='button' onClick={() => startNewConversation()}></button>
       </UserInputContainer>
       {!isChatEnabled && <Error className='cs1 ce12 p-small'>You have to setup an OpenAI API key in order to use the chatbot.</Error>}
     </Container>
@@ -134,6 +132,7 @@ const UserInputContainer = styled.div`
   flex-direction: row;
   margin-top: 16px;
   width: 100%;
+  margin-bottom: 16px;
 `;
 
 const InputContainer = styled.div`

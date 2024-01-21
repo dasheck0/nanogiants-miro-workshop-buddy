@@ -75,8 +75,8 @@ const Container = styled.div<{ isBot: boolean }>`
   border-radius: 16px;
   padding: 16px;
   outline-style: solid;
-  outline-width: ${props => (props.isBot ? 0 : 1)}px;
-  outline-color: green;
+  outline-width: ${props => (props.isBot ? 0 : 2)}px;
+  outline-color: ${props => (props.isBot ? 'transparent' : props.theme.colors.primary[500])};
   margin-bottom: 1px;
   margin-top: 1px;
 `;

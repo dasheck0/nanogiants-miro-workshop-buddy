@@ -4,14 +4,19 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import '../src/assets/style.css';
+import { EventProvider, useEventContext } from './EventContextProvider';
 import { Footer } from './components/Footer';
 import { Onboarding } from './components/Onboarding';
+import { SimpleModal } from './components/SimpleModal';
+import { useModal } from './components/useModal';
 import { Router } from './router';
 import { LocalStorageStore } from './store';
 import { theme } from './theme';
 
 const App: React.FC = () => {
   const [hasSeenOnboarding, setHasSeenOnboarding] = React.useState(LocalStorageStore.getInstance().get('hasSeenOnboarding'));
+  const { close, isOpen, open } = useModal();
+  const { dispatchEvent } = useEventContext();
 
   return (
     <MainContainer>
@@ -22,7 +27,24 @@ const App: React.FC = () => {
         </ContentContainer>
       )}
 
-      {hasSeenOnboarding && <Footer />}
+      {hasSeenOnboarding && (
+        <SimpleModal
+          isOpen={isOpen}
+          onClose={close}
+          onStartNewChat={() => {
+            close();
+            dispatchEvent('startNewChat');
+          }}
+        />
+      )}
+
+      {hasSeenOnboarding && (
+        <Footer
+          onSettingsClick={() => {
+            open();
+          }}
+        />
+      )}
     </MainContainer>
   );
 };
@@ -30,11 +52,13 @@ const App: React.FC = () => {
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(
-  <BrowserRouter>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
-  </BrowserRouter>,
+  <EventProvider>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
+  </EventProvider>,
 );
 
 const MainContainer = styled.div`

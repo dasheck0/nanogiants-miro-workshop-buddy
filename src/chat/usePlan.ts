@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useEventContext } from '../EventContextProvider';
 import { ActionPlanItem, defaultPlan, onAnswer, onNegative, onPositive } from '../dtos/actionPlan.dto';
 import { ChatMessage } from '../dtos/chat.dto';
 import { LocalStorageStore } from '../store';
@@ -13,6 +14,14 @@ export const usePlan = () => {
 
   const [conversation, setConversation] = useState<Conversation | undefined>(undefined);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const { lastEvent } = useEventContext();
+
+  useEffect(() => {
+    if (lastEvent === 'startNewChat') {
+      startNewConversation();
+    }
+  }, [lastEvent]);
 
   useEffect(() => {
     if (conversation) {
@@ -65,6 +74,8 @@ export const usePlan = () => {
 
     setConversation(newConversation);
     setMessages(newConversation.messages);
+
+    miro.board.notifications.showInfo('New conversation started');
   };
 
   const handleUserMessage = async (message: string) => {

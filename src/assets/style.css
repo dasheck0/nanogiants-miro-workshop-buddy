@@ -54,3 +54,34 @@ img {
 .align-self-top {
   align-self: flex-start;
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.modal {
+  z-index: 1001;
+  background-color: white;
+  overflow: auto;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: auto;
+  position: absolute;
+  bottom: 65px;
+  right: 20px;
+  border: 1px solid #f2f2f2;
+  width: 250px;
+  animation: modal 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
