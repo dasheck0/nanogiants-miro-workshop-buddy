@@ -1,12 +1,13 @@
 import { ChatMessage, Conversation } from '../dtos/chat.dto';
 
-type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation' | 'hasSeenOnboarding';
+type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation' | 'hasSeenOnboarding' | 'frames';
 
 interface StoreData {
   openaiapikey: string;
   conversations: Conversation[];
   currentConversation?: string;
   hasSeenOnboarding: boolean;
+  frames: { id: string; rowIndex: number }[];
 }
 
 type Store = {
@@ -25,6 +26,7 @@ export class LocalStorageStore {
       currentConversation: undefined,
       conversations: [],
       hasSeenOnboarding: false,
+      frames: [],
     };
 
     this.loadFromLocalStorage();
@@ -82,6 +84,11 @@ export class LocalStorageStore {
       conversation.messages = messages;
     }
 
+    this.saveToLocalStorage();
+  }
+
+  public addFrame(frameId: string, rowIndex: number) {
+    this.store.frames.push({ id: frameId, rowIndex });
     this.saveToLocalStorage();
   }
 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { usePlan } from '../chat/usePlan';
 import { ChatMessage } from '../dtos/chat.dto';
+import { useCreateAgendaItemBoard } from '../miro/useCreateAgendaItemBoard';
 import { LocalStorageStore } from '../store';
 import { generateUuidV4 } from '../utils';
 import { ChatMessageItem } from './ChatMessageItem';
@@ -25,6 +26,8 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
   const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(false);
   const [sendButtonClass, setSendButtonClass] = React.useState<string>('button button-small button-primary');
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const { create } = useCreateAgendaItemBoard();
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
@@ -59,6 +62,16 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
 
   const isLatestBotMessage = (message: ChatMessage) => {
     return messages.length > 0 && messages[messages.length - 1].uuid === message.uuid;
+  };
+
+  const createTest = async () => {
+    try {
+      await create(
+        'Create one board for the following agenda item. The agenda item is called ice breaker and the main goal is to get to know each other and have a little fun. It should be about 15 minutes long. Create only one single board and not multiple ones!',
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -106,6 +119,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props: ChatbotProps) => {
           {!isLoading && <span className='icon-invitation'></span>}
         </button>
       </UserInputContainer>
+      <button onClick={() => createTest()}>Click</button>
       {!isChatEnabled && <Error className='cs1 ce12 p-small'>You have to setup an OpenAI API key in order to use the chatbot.</Error>}
     </Container>
   );

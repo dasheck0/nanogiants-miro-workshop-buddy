@@ -15,6 +15,7 @@ export const WorkshopDebugView: React.FC<WorkshopDebugViewProps> = (props: Works
         <pre>
           {JSON.stringify(
             {
+              frames: LocalStorageStore.getInstance().get('frames'),
               conversation: LocalStorageStore.getInstance()
                 .get('conversations')
                 .filter((conversation: any) => conversation.uuid === LocalStorageStore.getInstance().get('currentConversation'))[0],
