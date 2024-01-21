@@ -1,20 +1,15 @@
 import { Frame } from '@mirohq/websdk-types';
-import { Position, WorkshopFrame } from '../dtos/miro.dto';
+import { Position } from '../dtos/miro.dto';
+import { LocalStorageStore } from '../store';
 import { defaultDimensions, defaultPalette } from '../theme/palette';
 
 export const useFrames = () => {
-  const createFrame = async (
-    origin: Position,
-    existingFrames: WorkshopFrame[],
-    title: string,
-    width: number,
-    height: number,
-  ): Promise<Frame> => {
-    const position = calculateOriginForNewFrame(0, origin, existingFrames);
+  const createFrame = async (rowIndex: number, origin: Position, title: string, width: number, height: number): Promise<Frame> => {
+    const position = await calculateOriginForNewFrame(rowIndex, origin);
 
     const frame = await miro.board.createFrame({
       title,
-      x: position.x,
+      x: position.x + width / 2,
       y: position.y,
       width,
       height,
@@ -26,30 +21,72 @@ export const useFrames = () => {
     return frame;
   };
 
-  const calculateOriginForNewFrame = (desiredRowIndex: number, origin: Position, frames: WorkshopFrame[]): Position => {
-    console.log('existing feame', frames);
+  const calculateOriginForNewFrame = async (desiredRowIndex: number, origin: Position): Promise<Position> => {
+    const boardStorage = LocalStorageStore.getInstance().get('boardStorage');
 
-    if (frames.length === 0) {
+    const frames2: Frame[] = (await miro.board.get({ id: Object.keys(boardStorage) })) as Frame[];
+
+    if (frames2.length === 0) {
       return origin;
     }
 
-    const framesInRow = frames.filter(frame => frame.rowIndex === desiredRowIndex);
-    const frameAtMostRight = framesInRow.reduce((prev, current) => (prev.frame.x > current.frame.x ? prev : current));
+    const allFramesInDesiredRow = frames2.filter(frame => boardStorage[frame.id] === desiredRowIndex);
 
-    if (frameAtMostRight) {
-      return {
-        x: frameAtMostRight.frame.x + frameAtMostRight.frame.width + defaultDimensions.frameGap,
-        y: frameAtMostRight.frame.y,
-      };
-    } else {
-      const framesAbove = frames.filter(frame => frame.rowIndex === desiredRowIndex - 1);
-      const y = framesAbove[0]?.frame.y + framesAbove[0]?.frame.height + defaultDimensions.frameGap || origin.y;
+    if (allFramesInDesiredRow.length === 0) {
+      // is there a frame above?
+      const framesAbove = frames2.filter(frame => boardStorage[frame.id] === desiredRowIndex - 1);
+      console.log('framesAbove', framesAbove);
+
+      const y = framesAbove[0]?.y + framesAbove[0]?.height + defaultDimensions.frameGap || origin.y;
+
+      console.log('y', y);
 
       return {
         x: origin.x,
         y,
       };
+    } else {
+      const frameAtMostRight = allFramesInDesiredRow.reduce((prev, current) => (prev.x > current.x ? prev : current));
+      console.log('frameAtMostRight', frameAtMostRight);
+
+      if (frameAtMostRight) {
+        const r = {
+          x: frameAtMostRight.x + frameAtMostRight.width / 2 + defaultDimensions.frameGap,
+          y: frameAtMostRight.y,
+        };
+        console.log('r', r);
+        return r;
+      } else {
+        return origin;
+      }
     }
+
+    // console.log('existing feame', frames2);
+    // console.log('des', desiredRowIndex);
+
+    // const frameAtMostRight = allFramesInDesiredRow.reduce((prev, current) => (prev.x > current.x ? prev : current));
+    // console.log('frameAtMostRight', frameAtMostRight);
+
+    // if (frameAtMostRight) {
+    //   const r = {
+    //     x: frameAtMostRight.x + frameAtMostRight.width / 2 + defaultDimensions.frameGap,
+    //     y: frameAtMostRight.y,
+    //   };
+    //   console.log('r', r);
+    //   return r;
+    // } else {
+    //   const framesAbove = frames2.filter(frame => boardStorage[frame.id] === desiredRowIndex - 1);
+    //   console.log('framesAbove', framesAbove);
+
+    //   const y = framesAbove[0]?.y + framesAbove[0]?.height + defaultDimensions.frameGap || origin.y;
+
+    //   console.log('y', y);
+
+    //   return {
+    //     x: origin.x,
+    //     y,
+    //   };
+    // }
   };
 
   return {

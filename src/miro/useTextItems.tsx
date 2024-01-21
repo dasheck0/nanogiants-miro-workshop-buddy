@@ -33,6 +33,16 @@ export const useTextItems = () => {
     return createText(text, position, width, 1, parent, textAlign);
   };
 
+  const createHint = async (
+    text: string,
+    position: Position,
+    width: number,
+    parent: Frame,
+    textAlign: 'center' | 'right' | 'left' = 'left',
+  ): Promise<Text> => {
+    return createText(text, position, width, 0.75, parent, textAlign);
+  };
+
   const createText = async (
     text: string,
     position: Position,
@@ -61,5 +71,6 @@ export const useTextItems = () => {
     createHeading,
     createSubHeading,
     createBody,
+    createHint,
   };
 };

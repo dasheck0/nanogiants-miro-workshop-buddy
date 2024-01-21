@@ -3,42 +3,49 @@ import { useToolCall } from '../chat/useToolCall';
 import { LocalStorageStore } from '../store';
 import { useBuilder } from './useBuilder';
 
-export const useCreateAgendaItemBoard = () => {
+export const useCreateSinglePaneBoard = () => {
   const { invokeTool } = useToolCall();
-  const { createAgendaItemFrame } = useBuilder();
+  const { createSinglePaneItemFrame } = useBuilder();
 
-  const createAgendaItemBoard = async (description: string, rowIndex: number) => {
+  const createSinglePaneBoard = async (description: string, rowIndex: number) => {
     const openai = new OpenAI({
       apiKey: LocalStorageStore.getInstance().get('openaiapikey'),
       dangerouslyAllowBrowser: true,
     });
 
-    createAgendaItemFrame({
+    createSinglePaneItemFrame({
       rowIndex,
-      title: 'Jfkdhjfdkfdjk',
-      description: 'jhfkdhfjdsjkd',
-      duration: 'fhdkjfhdjk',
-      desiredOutcome: 'Hjkfhdjk',
+      // title,
+      // description,
+      // duration: durationInMinutes,
+      // paneTitle,
+      // paneDescription,
+      title: 'fdjkldjkl',
+      description: 'fdjkldjkl',
+      duration: 'fdjkldjkl',
+      paneTitle: 'fdjkldjkl',
+      paneDescription: 'fdjkldjkl',
     });
 
     // invokeTool({
     //   openAIClient: openai,
     //   tools: [],
-    //   functions: [createAgendaItemFunction],
+    //   functions: [createSinglePaneItemFunction],
     //   prompt: description,
-    //   forceTool: 'createAgendaItem',
+    //   forceTool: 'createSinglePaneItem',
     //   onToolsInvoked: tools => {
     //     console.log(tools);
     //   },
     //   onFunctionInvoked: functionCall => {
     //     console.log(functionCall);
-    //     const { title, description, durationInMinutes, desiredOutcome } = JSON.parse(functionCall.arguments);
-    //     createAgendaItemFrame({
+    //     const { title, description, durationInMinutes, paneTitle, paneDescription } = JSON.parse(functionCall.arguments);
+    //     createSinglePaneItemFrame({
     //       rowIndex,
     //       title,
     //       description,
     //       duration: durationInMinutes,
-    //       desiredOutcome,
+    //       paneTitle,
+    //       paneDescription,
     //     });
     //   },
     //   onRegularInocation: message => {
@@ -48,6 +55,6 @@ export const useCreateAgendaItemBoard = () => {
   };
 
   return {
-    createAgendaItemBoard,
+    createSinglePaneBoard,
   };
 };

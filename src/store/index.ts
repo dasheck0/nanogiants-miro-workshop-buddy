@@ -1,6 +1,7 @@
 import { ChatMessage, Conversation } from '../dtos/chat.dto';
+import { BoardStorage } from './../dtos/miro.dto';
 
-type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation' | 'hasSeenOnboarding' | 'frames';
+type LocalStorageStoreType = 'openaiapikey' | 'conversations' | 'currentConversation' | 'hasSeenOnboarding' | 'frames' | 'boardStorage';
 
 interface StoreData {
   openaiapikey: string;
@@ -8,6 +9,7 @@ interface StoreData {
   currentConversation?: string;
   hasSeenOnboarding: boolean;
   frames: { id: string; rowIndex: number }[];
+  boardStorage: BoardStorage;
 }
 
 type Store = {
@@ -27,6 +29,7 @@ export class LocalStorageStore {
       conversations: [],
       hasSeenOnboarding: false,
       frames: [],
+      boardStorage: {},
     };
 
     this.loadFromLocalStorage();
